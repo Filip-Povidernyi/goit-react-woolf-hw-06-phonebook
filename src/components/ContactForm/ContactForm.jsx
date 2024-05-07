@@ -13,6 +13,7 @@ const numberInputId = nanoid();
 const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+  const [id, setId] = useState(nanoid());
 
   const contacts = useSelector(getVisibleContacts);
   const dispatch = useDispatch();
@@ -28,7 +29,8 @@ const ContactForm = () => {
       return Notify.info(`${name} is already in contacts`);
     }
 
-    dispatch(addContact({ name, number }));
+    dispatch(addContact({ id, name, number }));
+    setId(nanoid());
     setName('');
     setNumber('');
   };

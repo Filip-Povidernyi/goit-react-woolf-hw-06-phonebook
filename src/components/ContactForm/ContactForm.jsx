@@ -1,18 +1,34 @@
 import React, { useState } from 'react';
 import { nanoid } from 'nanoid';
 import contactFormStyles from './style.module.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { getVisibleContacts } from 'store/selectors/selectors';
+import { addContact } from 'store/sliceContacts/sliceContacts';
+import { Notify } from 'notiflix';
 
-const ContactForm = ({ onSubmit }) => {
+
+const nameInputId = nanoid();
+const numberInputId = nanoid();
+
+const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
 
-  const nameInputId = nanoid();
-  const numberInputId = nanoid();
+  const contacts = useSelector(getVisibleContacts);
+  const dispatch = useDispatch();
 
   const handleSubmit = event => {
     event.preventDefault();
 
-    onSubmit({ name, number });
+    const isInContacts = contacts.some(
+      contact => contact.name.toLowerCase().trim() === name.toLowerCase().trim()
+    );
+
+    if (isInContacts) {
+      return Notify.info(`${name} is already in contacts`);
+    }
+
+    dispatch(addContact({ name, number }));
     setName('');
     setNumber('');
   };
@@ -32,8 +48,8 @@ const ContactForm = ({ onSubmit }) => {
     }
   };
 
-
-    return (
+  return (
+    <div>
       <form className={contactFormStyles.form} onSubmit={handleSubmit}>
         <label className={contactFormStyles.label} htmlFor={nameInputId}>
           Name
@@ -67,8 +83,8 @@ const ContactForm = ({ onSubmit }) => {
           Add contact{' '}
         </button>
       </form>
-    );
-  }
-
+    </div>
+  );
+};
 
 export default ContactForm;

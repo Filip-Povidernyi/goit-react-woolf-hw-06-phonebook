@@ -1,8 +1,22 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import filterStyles from './style.module.css';
+import { nanoid } from '@reduxjs/toolkit';
+import { useDispatch, useSelector } from 'react-redux';
+import { getFilter } from 'store/selectors/selectors';
+import { changeFilter } from 'store/sliceFilter/sliceFilter';
 
-function Filter({ value, onChangeFilter }) {
+const filterInputId = nanoid();
+
+function Filter() {
+  const value = useSelector(getFilter);
+  const dispatch = useDispatch();
+
+  const onChangeFilter = event => {
+    const normalizedValue = event.target.value.toLowerCase();
+
+    dispatch(changeFilter(normalizedValue));
+  };
+
   return (
     <div>
       <label className={filterStyles.label}>
@@ -10,18 +24,13 @@ function Filter({ value, onChangeFilter }) {
         <input
           className={filterStyles.input}
           type="text"
-          placeholder="Search contacts..."
           value={value}
           onChange={onChangeFilter}
+          id={filterInputId}
         />
       </label>
     </div>
   );
 }
-
-Filter.propTypes = {
-  value: PropTypes.string.isRequired,
-  onChangeFilter: PropTypes.func.isRequired,
-};
 
 export default Filter;
